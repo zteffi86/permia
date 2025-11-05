@@ -1,74 +1,42 @@
+# Environment
+.env
+.env.*
+!.env.example
+
 # Python
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-
-# Virtual Environment
 venv/
 env/
 ENV/
-.venv
+*.egg-info/
+dist/
+build/
+.pytest_cache/
 
-# Environment Variables
-.env
-.env.local
-.env.*.local
-
-# IDE
+# IDEs
 .vscode/
 .idea/
 *.swp
 *.swo
-*~
-
-# OS
 .DS_Store
-Thumbs.db
-
-# Testing
-.pytest_cache/
-.coverage
-htmlcov/
-*.cover
 
 # Database
 *.db
-*.sqlite3
-
-# Keys & Secrets
-keys/*.key
-keys/*.pem
-*.key
-*.pem
-!keys/.gitkeep
+*.sqlite
 
 # Logs
-logs/
 *.log
 
-# Alembic
-alembic.ini
+# Keys
+keys/export_private_key.pem
+keys/export_public_key.pem
 
-# Celery
-celerybeat-schedule
-celerybeat.pid
-
-# Jupyter
-.ipynb_checkpoints
+# Test files
+test_image.jpg
+test_file.pdf
+evidence.json
+evidence_auth.json
