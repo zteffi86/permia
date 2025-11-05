@@ -1,0 +1,90 @@
+{
+  "rule_id": "FIRE_001",
+  "version": "1.0",
+  "statute_id": "IS.RVK.FIRE.2024.SEC.8.1.2",
+  "rule_type": "compliance",
+  "severity": "critical",
+  "category": "fire_safety",
+  "description": "Kitchens >40 sqm require minimum 2 fire extinguishers",
+  "operator_tree": {
+    "op": "any_of",
+    "conditions": [
+      {
+        "op": "threshold_numeric_compare",
+        "params": {
+          "fact_name": "kitchen.floor_area_sqm",
+          "operator": "<=",
+          "threshold": 40.0
+        }
+      },
+      {
+        "op": "threshold_numeric_compare",
+        "params": {
+          "fact_name": "fire_safety.extinguisher.count",
+          "operator": ">=",
+          "threshold": 2
+        }
+      }
+    ]
+  },
+  "outcomes": {
+    "PASS": {
+      "message_key": "fire_safety.extinguishers.compliant",
+      "remediation_key": null
+    },
+    "FAIL": {
+      "message_key": "fire_safety.extinguishers.insufficient",
+      "remediation_key": "fire_safety.extinguishers.install_additional"
+    },
+    "CONDITIONAL": {
+      "message_key": "fire_safety.extinguishers.review_required",
+      "remediation_key": "fire_safety.extinguishers.inspector_verification"
+    },
+    "INSUFFICIENT_EVIDENCE": {
+      "message_key": "fire_safety.extinguishers.evidence_missing",
+      "remediation_key": "fire_safety.extinguishers.submit_evidence"
+    }
+  },
+  "fixtures": [
+    {
+      "name": "compliant_small_kitchen_1_extinguisher",
+      "facts": {
+        "kitchen.floor_area_sqm": 35.0,
+        "fire_safety.extinguisher.count": 1
+      },
+      "expected_outcome": "PASS"
+    },
+    {
+      "name": "compliant_large_kitchen_2_extinguishers",
+      "facts": {
+        "kitchen.floor_area_sqm": 60.0,
+        "fire_safety.extinguisher.count": 2
+      },
+      "expected_outcome": "PASS"
+    },
+    {
+      "name": "compliant_large_kitchen_3_extinguishers",
+      "facts": {
+        "kitchen.floor_area_sqm": 80.0,
+        "fire_safety.extinguisher.count": 3
+      },
+      "expected_outcome": "PASS"
+    },
+    {
+      "name": "non_compliant_large_kitchen_1_extinguisher",
+      "facts": {
+        "kitchen.floor_area_sqm": 60.0,
+        "fire_safety.extinguisher.count": 1
+      },
+      "expected_outcome": "FAIL"
+    },
+    {
+      "name": "non_compliant_large_kitchen_0_extinguishers",
+      "facts": {
+        "kitchen.floor_area_sqm": 80.0,
+        "fire_safety.extinguisher.count": 0
+      },
+      "expected_outcome": "FAIL"
+    }
+  ]
+}
