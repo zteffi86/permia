@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: permia-db
+    environment:
+      POSTGRES_DB: permia
+      POSTGRES_USER: permia
+      POSTGRES_PASSWORD: permia_dev_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U permia"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite
+    container_name: permia-azurite
+    ports:
+      - "10000:10000"
+      - "10001:10001"
+      - "10002:10002"
+    volumes:
+      - azurite_data:/data
+    command: "azurite --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0 --location /data"
+
+volumes:
+  postgres_data:
+  azurite_data:

@@ -1,0 +1,6 @@
+# Permía Backend Scheduled Tasks
+
+# Cleanup idempotency cache daily at 2 AM
+0 2 * * * cd /app && /app/venv/bin/python -m src.tasks.cleanup
+
+# Add other scheduled tasks below as needed
