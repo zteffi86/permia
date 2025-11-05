@@ -42,7 +42,7 @@ class AuditService:
             resource_type=resource_type,
             resource_id=resource_id,
             result=result,
-            metadata=metadata,
+            audit_metadata=metadata,
         )
         db.add(entry)
         # Commit is handled by caller
