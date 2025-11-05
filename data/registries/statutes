@@ -1,0 +1,102 @@
+[
+  {
+    "statute_id": "IS.RVK.FOOD.2024.SEC.4.2.1",
+    "jurisdiction": "Reykjavík",
+    "statute_type": "regulation",
+    "version": "2024.1",
+    "title": "Food Safety - Handwashing Facilities",
+    "canonical_text": "Commercial kitchens must have a minimum of two (2) handwash stations equipped with hot and cold running water, soap dispensers, and single-use towels. Handwash stations must be separate from food preparation sinks.",
+    "effective_date": "2024-01-01T00:00:00Z",
+    "source_url": "https://reykjavik.is/food-safety-regulations-2024"
+  },
+  {
+    "statute_id": "IS.RVK.FOOD.2024.SEC.5.1.3",
+    "jurisdiction": "Reykjavík",
+    "statute_type": "regulation",
+    "version": "2024.1",
+    "title": "Food Safety - Separate Preparation Areas",
+    "canonical_text": "Kitchens preparing both raw and cooked foods must maintain physically separate preparation areas to prevent cross-contamination. Raw meat, poultry, and seafood must be prepared in designated areas with separate cutting boards and utensils.",
+    "effective_date": "2024-01-01T00:00:00Z",
+    "source_url": "https://reykjavik.is/food-safety-regulations-2024"
+  },
+  {
+    "statute_id": "IS.RVK.FOOD.2024.SEC.6.3.2",
+    "jurisdiction": "Reykjavík",
+    "statute_type": "regulation",
+    "version": "2024.1",
+    "title": "Waste Management - Covered Storage",
+    "canonical_text": "All waste storage containers must have tight-fitting lids or covers. Waste storage areas must be located at least 3 meters from kitchen entrances and food storage areas to prevent pest attraction and contamination.",
+    "effective_date": "2024-01-01T00:00:00Z",
+    "source_url": "https://reykjavik.is/food-safety-regulations-2024"
+  },
+  {
+    "statute_id": "IS.RVK.FOOD.2024.SEC.7.2.1",
+    "jurisdiction": "Reykjavík",
+    "statute_type": "regulation",
+    "version": "2024.1",
+    "title": "Temperature Control - Refrigeration Monitoring",
+    "canonical_text": "All refrigeration units used for food storage must maintain temperatures at or below 4°C (39°F). Establishments with more than one refrigeration unit must implement continuous temperature monitoring with automated alerts.",
+    "effective_date": "2024-01-01T00:00:00Z",
+    "source_url": "https://reykjavik.is/food-safety-regulations-2024"
+  },
+  {
+    "statute_id": "IS.RVK.ACCESS.2023.SEC.3.1.1",
+    "jurisdiction": "Reykjavík",
+    "statute_type": "ordinance",
+    "version": "2023.2",
+    "title": "Accessibility - Entrance Requirements",
+    "canonical_text": "All public dining establishments must provide at least one accessible entrance with a maximum slope of 1:12 and minimum clear width of 90cm. Entrance ramps must have handrails on both sides if longer than 180cm.",
+    "effective_date": "2023-06-01T00:00:00Z",
+    "source_url": "https://reykjavik.is/accessibility-ordinance-2023"
+  },
+  {
+    "statute_id": "IS.RVK.ACCESS.2023.SEC.3.2.1",
+    "jurisdiction": "Reykjavík",
+    "statute_type": "ordinance",
+    "version": "2023.2",
+    "title": "Accessibility - Restroom Requirements",
+    "canonical_text": "Establishments with seating capacity exceeding 20 persons must provide at least one accessible restroom meeting size requirements (minimum 150cm x 150cm clear floor space) with grab bars and accessible fixtures.",
+    "effective_date": "2023-06-01T00:00:00Z",
+    "source_url": "https://reykjavik.is/accessibility-ordinance-2023"
+  },
+  {
+    "statute_id": "IS.RVK.FIRE.2024.SEC.8.1.2",
+    "jurisdiction": "Reykjavík",
+    "statute_type": "regulation",
+    "version": "2024.1",
+    "title": "Fire Safety - Extinguisher Requirements",
+    "canonical_text": "Commercial kitchens must have fire extinguishers rated for Class K (cooking oils/fats) positioned within 9 meters of all cooking equipment. Minimum of two (2) extinguishers required for kitchens exceeding 40 square meters.",
+    "effective_date": "2024-01-01T00:00:00Z",
+    "source_url": "https://reykjavik.is/fire-safety-code-2024"
+  },
+  {
+    "statute_id": "IS.RVK.FIRE.2024.SEC.8.2.1",
+    "jurisdiction": "Reykjavík",
+    "statute_type": "regulation",
+    "version": "2024.1",
+    "title": "Fire Safety - Hood Suppression Systems",
+    "canonical_text": "All commercial cooking equipment producing grease-laden vapors must be protected by an automatic fire suppression system installed in accordance with NFPA 96 standards. Systems must be inspected semi-annually by certified technicians.",
+    "effective_date": "2024-01-01T00:00:00Z",
+    "source_url": "https://reykjavik.is/fire-safety-code-2024"
+  },
+  {
+    "statute_id": "IS.RVK.STAFF.2024.SEC.2.1.1",
+    "jurisdiction": "Reykjavík",
+    "statute_type": "regulation",
+    "version": "2024.1",
+    "title": "Staff Certification - Food Handler Permits",
+    "canonical_text": "At least 80% of food service staff involved in food preparation, handling, or service must hold valid food handler permits issued by the Reykjavík Health Department. Permits must be renewed every three (3) years with successful completion of food safety training.",
+    "effective_date": "2024-01-01T00:00:00Z",
+    "source_url": "https://reykjavik.is/food-handler-requirements-2024"
+  },
+  {
+    "statute_id": "IS.RVK.VENT.2024.SEC.9.1.1",
+    "jurisdiction": "Reykjavík",
+    "statute_type": "regulation",
+    "version": "2024.1",
+    "title": "Ventilation - Kitchen Exhaust Capacity",
+    "canonical_text": "Kitchen exhaust hoods must provide minimum air movement of 100 CFM per linear foot of hood length for non-grease cooking equipment, and 200 CFM per linear foot for grease-producing equipment. Hoods must extend at least 15cm beyond cooking surfaces on all open sides.",
+    "effective_date": "2024-01-01T00:00:00Z",
+    "source_url": "https://reykjavik.is/ventilation-standards-2024"
+  }
+]
