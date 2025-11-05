@@ -26,4 +26,4 @@ def cleanup_idempotency_cache(days: int = 31) -> int:
 if __name__ == "__main__":
     # Manual cleanup
     count = cleanup_idempotency_cache()
-    print(f" Cleaned up {count} idempotency cache entries")
+    print(f"Cleaned up {count} idempotency cache entries")

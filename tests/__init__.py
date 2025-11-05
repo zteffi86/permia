@@ -1,1 +1,1 @@
-"""Test suite for Permía Backend"""
+"""Test suite for Permia Backend"""

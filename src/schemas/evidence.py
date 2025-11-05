@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from datetime import datetime
 from enum import Enum
 from typing import Optional
@@ -60,6 +60,8 @@ class IntegrityCheckResult(BaseModel):
 class EvidenceResponse(BaseModel):
     """Response after evidence upload"""
 
+    model_config = ConfigDict(from_attributes=True)
+
     evidence_id: str
     application_id: str
     storage_uri: Optional[str]
@@ -67,12 +69,11 @@ class EvidenceResponse(BaseModel):
     integrity_check: IntegrityCheckResult
     created_at: datetime
 
-    class Config:
-        from_attributes = True
-
 
 class EvidenceDetailResponse(BaseModel):
     """Detailed evidence information"""
+
+    model_config = ConfigDict(from_attributes=True)
 
     evidence_id: str
     application_id: str
@@ -94,6 +95,3 @@ class EvidenceDetailResponse(BaseModel):
     integrity_issues: Optional[list[str]]
     created_at: datetime
     updated_at: datetime
-
-    class Config:
-        from_attributes = True
