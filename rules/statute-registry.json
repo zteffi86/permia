@@ -1,0 +1,16 @@
+{
+  "IS-LAW-7-1998": {
+    "id": "IS-LAW-7-1998",
+    "jurisdiction": "Iceland",
+    "title": "Lög um hollustuhætti og mengunarvarnir",
+    "version": "Current (amended 2023)",
+    "url": "https://www.althingi.is/lagas/nuna/1998007.html"
+  },
+  "EU-REG-852-2004": {
+    "id": "EU-REG-852-2004",
+    "jurisdiction": "EU",
+    "title": "Regulation (EC) No 852/2004 on the hygiene of foodstuffs",
+    "version": "Consolidated 2021",
+    "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:02004R0852-20210101"
+  }
+}

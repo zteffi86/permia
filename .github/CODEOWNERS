@@ -1,0 +1,4 @@
+/rules/**                                    @stefania
+/apps/backend/src/services/evaluation/**    @stefania
+/docs/api/openapi.yaml                      @backend-lead
+/packages/ui/                               @frontend-lead

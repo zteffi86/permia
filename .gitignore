@@ -1,0 +1,48 @@
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Dependencies
+node_modules/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Build outputs
+dist/
+build/
+*.log
+.turbo/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test coverage
+coverage/
+.coverage
+htmlcov/
+
+# Mobile
+apps/mobile-android/build/
+apps/mobile-android/.gradle/
+apps/mobile-android/local.properties
+apps/mobile-ios/Pods/
+apps/mobile-ios/*.xcworkspace/xcuserdata/
+apps/mobile-ios/DerivedData/
+
+# Azure credentials
+.azure/
+
+# Terraform
+infra/**/.terraform/
+infra/**/*.tfstate
+infra/**/*.tfstate.backup
