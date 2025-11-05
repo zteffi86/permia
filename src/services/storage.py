@@ -13,16 +13,18 @@ class StorageService:
             settings.AZURE_STORAGE_CONNECTION_STRING
         )
         self.container_name = settings.AZURE_STORAGE_CONTAINER_NAME
-        self._ensure_container()
+        self.export_container_name = settings.AZURE_STORAGE_EXPORT_CONTAINER_NAME
+        self._ensure_containers()
 
-    def _ensure_container(self) -> None:
-        """Create container if it doesn't exist"""
-        try:
-            container_client = self.client.get_container_client(self.container_name)
-            if not container_client.exists():
-                container_client.create_container()
-        except AzureError as e:
-            print(f"Warning: Could not verify/create container: {e}")
+    def _ensure_containers(self) -> None:
+        """Create containers if they don't exist"""
+        for container_name in [self.container_name, self.export_container_name]:
+            try:
+                container_client = self.client.get_container_client(container_name)
+                if not container_client.exists():
+                    container_client.create_container()
+            except AzureError as e:
+                print(f"Warning: Could not verify/create container {container_name}: {e}")
 
     def upload_file(
         self,
