@@ -1,0 +1,138 @@
+[
+  {
+    "fact_name": "kitchen.handwash_stations.count",
+    "fact_type": "integer",
+    "unit": "count",
+    "tolerance": 0,
+    "min_value": 0,
+    "max_value": 50,
+    "description": "Number of handwash stations in kitchen area with hot/cold water and soap",
+    "examples": [2, 3, 4]
+  },
+  {
+    "fact_name": "kitchen.floor_area_sqm",
+    "fact_type": "float",
+    "unit": "square_meters",
+    "tolerance": 0.5,
+    "min_value": 5.0,
+    "max_value": 1000.0,
+    "description": "Total floor area of kitchen in square meters",
+    "examples": [45.5, 67.2, 120.0]
+  },
+  {
+    "fact_name": "kitchen.separate_prep_areas.exists",
+    "fact_type": "boolean",
+    "description": "Whether kitchen has separate areas for raw and cooked food preparation",
+    "examples": [true, false]
+  },
+  {
+    "fact_name": "waste_storage.covered",
+    "fact_type": "boolean",
+    "description": "Whether waste storage area has covered containers",
+    "examples": [true, false]
+  },
+  {
+    "fact_name": "waste_storage.distance_from_kitchen_m",
+    "fact_type": "float",
+    "unit": "meters",
+    "tolerance": 0.5,
+    "min_value": 0.0,
+    "max_value": 100.0,
+    "description": "Distance from waste storage to kitchen entrance in meters",
+    "examples": [5.0, 8.5, 12.0]
+  },
+  {
+    "fact_name": "refrigeration.units.count",
+    "fact_type": "integer",
+    "unit": "count",
+    "tolerance": 0,
+    "min_value": 0,
+    "max_value": 50,
+    "description": "Number of commercial refrigeration units",
+    "examples": [2, 3, 5]
+  },
+  {
+    "fact_name": "refrigeration.temperature_monitoring",
+    "fact_type": "boolean",
+    "description": "Whether refrigeration units have continuous temperature monitoring",
+    "examples": [true, false]
+  },
+  {
+    "fact_name": "dining_area.seating_capacity",
+    "fact_type": "integer",
+    "unit": "count",
+    "tolerance": 0,
+    "min_value": 1,
+    "max_value": 500,
+    "description": "Maximum seating capacity in dining area",
+    "examples": [40, 60, 120]
+  },
+  {
+    "fact_name": "accessibility.entrance_ramp.exists",
+    "fact_type": "boolean",
+    "description": "Whether accessible entrance ramp exists for wheelchairs",
+    "examples": [true, false]
+  },
+  {
+    "fact_name": "accessibility.accessible_restroom.exists",
+    "fact_type": "boolean",
+    "description": "Whether at least one accessible restroom exists",
+    "examples": [true, false]
+  },
+  {
+    "fact_name": "fire_safety.extinguisher.count",
+    "fact_type": "integer",
+    "unit": "count",
+    "tolerance": 0,
+    "min_value": 0,
+    "max_value": 50,
+    "description": "Number of fire extinguishers on premises",
+    "examples": [2, 3, 4]
+  },
+  {
+    "fact_name": "fire_safety.hood_suppression.exists",
+    "fact_type": "boolean",
+    "description": "Whether kitchen hood has automatic fire suppression system",
+    "examples": [true, false]
+  },
+  {
+    "fact_name": "ventilation.hood_exhaust.capacity_cfm",
+    "fact_type": "float",
+    "unit": "cubic_feet_per_minute",
+    "tolerance": 50.0,
+    "min_value": 0.0,
+    "max_value": 10000.0,
+    "description": "Kitchen hood exhaust capacity in cubic feet per minute",
+    "examples": [1500.0, 2000.0, 3000.0]
+  },
+  {
+    "fact_name": "staff.food_handler_permits.count",
+    "fact_type": "integer",
+    "unit": "count",
+    "tolerance": 0,
+    "min_value": 0,
+    "max_value": 100,
+    "description": "Number of staff with valid food handler permits",
+    "examples": [5, 8, 12]
+  },
+  {
+    "fact_name": "staff.total_count",
+    "fact_type": "integer",
+    "unit": "count",
+    "tolerance": 0,
+    "min_value": 1,
+    "max_value": 200,
+    "description": "Total number of staff members",
+    "examples": [6, 10, 15]
+  },
+  {
+    "fact_name": "staff.permits_compliance_ratio",
+    "fact_type": "float",
+    "unit": "ratio",
+    "tolerance": 0.01,
+    "min_value": 0.0,
+    "max_value": 1.0,
+    "description": "Ratio of staff with food handler permits to total staff (permits_count / total_count). Pre-computed derived fact.",
+    "examples": [0.8, 0.85, 1.0]
+  }
+]
