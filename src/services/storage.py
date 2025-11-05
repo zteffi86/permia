@@ -1,5 +1,6 @@
 import hashlib
-from azure.storage.blob import BlobServiceClient, ContentSettings
+from datetime import datetime, timedelta
+from azure.storage.blob import BlobServiceClient, ContentSettings, generate_blob_sas, BlobSasPermissions
 from azure.core.exceptions import AzureError
 from ..core.config import settings
 
@@ -73,6 +74,54 @@ class StorageService:
     def compute_hash_streaming(self, file_bytes: bytes) -> str:
         """Compute SHA-256 hash"""
         return hashlib.sha256(file_bytes).hexdigest()
+
+    def generate_presigned_url(self, blob_path: str, expires_in_seconds: int = 3600) -> str:
+        """
+        Generate a presigned URL for blob access
+
+        Args:
+            blob_path: The blob name (storage path)
+            expires_in_seconds: URL expiry time in seconds (default 1 hour)
+
+        Returns:
+            Presigned URL string
+        """
+        try:
+            blob_client = self.client.get_blob_client(
+                container=self.container_name,
+                blob=blob_path,
+            )
+
+            # Parse account key from connection string
+            conn_parts = dict(
+                part.split("=", 1) for part in settings.AZURE_STORAGE_CONNECTION_STRING.split(";") if "=" in part
+            )
+            account_key = conn_parts.get("AccountKey")
+
+            if not account_key:
+                # Fallback: return blob URL without SAS (works for public containers)
+                return blob_client.url
+
+            # Generate SAS token
+            sas_token = generate_blob_sas(
+                account_name=blob_client.account_name,
+                container_name=self.container_name,
+                blob_name=blob_path,
+                account_key=account_key,
+                permission=BlobSasPermissions(read=True),
+                expiry=datetime.utcnow() + timedelta(seconds=expires_in_seconds),
+            )
+
+            # Return full URL with SAS token
+            return f"{blob_client.url}?{sas_token}"
+
+        except Exception as e:
+            # Fallback: return base URL
+            blob_client = self.client.get_blob_client(
+                container=self.container_name,
+                blob=blob_path,
+            )
+            return blob_client.url
 
     def check_health(self) -> bool:
         """Check if storage is accessible"""

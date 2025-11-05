@@ -85,7 +85,7 @@ class AuditLog(Base):
     resource_type = Column(String, nullable=False)
     resource_id = Column(String, nullable=False, index=True)
 
-    metadata = Column(JSON, nullable=True)
+    audit_metadata = Column("metadata", JSON, nullable=True)  # Renamed to avoid SQLAlchemy reserved word
     result = Column(String, nullable=False)
 
     def __repr__(self) -> str:
@@ -104,3 +104,46 @@ class IdempotencyCache(Base):
 
     def __repr__(self) -> str:
         return f"<IdempotencyCache(key={self.idempotency_key})>"
+
+
+class Export(Base):
+    """Export packages for evidence delivery"""
+
+    __tablename__ = "exports"
+
+    # Primary identifiers
+    export_id = Column(String, primary_key=True)
+    application_id = Column(String, nullable=False, index=True)
+    tenant_id = Column(String, nullable=False, index=True)
+
+    # Export configuration
+    format = Column(String, nullable=False, default="zip")
+    include_metadata = Column(Boolean, nullable=False, default=True)
+    sign_package = Column(Boolean, nullable=False, default=True)
+
+    # Export status
+    status = Column(String, nullable=False, default="pending", index=True)  # pending, processing, completed, failed
+    file_count = Column(Integer, nullable=True)
+    total_size_bytes = Column(Integer, nullable=True)
+
+    # Storage
+    storage_path = Column(String, nullable=True)  # Path to ZIP file in blob storage
+    signature = Column(String, nullable=True)  # Digital signature of the manifest
+
+    # Error handling
+    error_message = Column(Text, nullable=True)
+
+    # Audit
+    created_by = Column(String, nullable=False)
+    created_at = Column(DateTime, server_default=func.now(), nullable=False, index=True)
+    completed_at = Column(DateTime, nullable=True)
+    expires_at = Column(DateTime, nullable=True, index=True)
+    correlation_id = Column(String, nullable=False, index=True)
+
+    __table_args__ = (
+        Index("ix_exports_tenant_app", "tenant_id", "application_id"),
+        Index("ix_exports_status_created", "status", "created_at"),
+    )
+
+    def __repr__(self) -> str:
+        return f"<Export(id={self.export_id}, app={self.application_id}, status={self.status})>"

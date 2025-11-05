@@ -30,11 +30,36 @@ class Settings(BaseSettings):
     # Application
     ENVIRONMENT: str = "development"
     ALLOWED_ORIGINS: list[str] = ["http://localhost:3000", "http://localhost:5173"]
+    API_VERSION: str = "v1"
+    API_TITLE: str = "Permía API"
+    API_DESCRIPTION: str = "Deterministic enforcement infrastructure for regulated industries"
+
+    # Features
+    ENABLE_DOCS: bool = True
+    ENABLE_REDOC: bool = True
+    ENABLE_EXPORT_API: bool = True
+
+    # Rate Limiting
+    RATE_LIMIT_ENABLED: bool = True
+    RATE_LIMIT_PER_MINUTE: int = 60
+    RATE_LIMIT_PER_HOUR: int = 1000
+
+    # Logging
+    LOG_LEVEL: str = "INFO"
+
+    # Monitoring
+    SENTRY_DSN: str = ""
+    SENTRY_ENVIRONMENT: str = "development"
+    SENTRY_TRACES_SAMPLE_RATE: float = 0.1
 
     # Evidence Validation (MVP Evidence Policy defaults)
     MAX_TIME_DRIFT_SECONDS: float = 30.0
     MIN_GPS_ACCURACY_METERS: float = 50.0
     REPLAY_WINDOW_DAYS: int = 30
+
+    # Export Settings
+    EXPORT_RETENTION_DAYS: int = 90
+    EXPORT_STORAGE_PREFIX: str = "exports/"
 
 
 @lru_cache

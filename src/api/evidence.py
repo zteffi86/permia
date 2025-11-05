@@ -428,10 +428,16 @@ async def upload_evidence(
         )
 
     # ========== 11. CACHE IDEMPOTENCY ==========
+    # Generate presigned URL for client access
+    storage_uri = storage_service.generate_presigned_url(
+        blob_path=db_evidence.storage_path,
+        expires_in_seconds=3600
+    )
+
     response = EvidenceResponse(
         evidence_id=db_evidence.evidence_id,
         application_id=db_evidence.application_id,
-        storage_uri=None,
+        storage_uri=storage_uri,
         integrity_passed=db_evidence.integrity_passed,
         integrity_check=integrity_check,
         created_at=db_evidence.created_at,
@@ -480,6 +486,12 @@ async def get_evidence(
             detail=f"Evidence {evidence_id} not found",
         )
 
+    # Generate presigned URL for client access
+    storage_uri = storage_service.generate_presigned_url(
+        blob_path=evidence.storage_path,
+        expires_in_seconds=3600
+    )
+
     return EvidenceDetailResponse(
         evidence_id=evidence.evidence_id,
         application_id=evidence.application_id,
@@ -496,7 +508,7 @@ async def get_evidence(
         gps_accuracy_meters=evidence.gps_accuracy_meters,
         exif_data=evidence.exif_data,
         uploader_role=evidence.uploader_role,
-        storage_uri=None,
+        storage_uri=storage_uri,
         integrity_passed=evidence.integrity_passed,
         integrity_issues=evidence.integrity_issues,
         created_at=evidence.created_at,
@@ -523,28 +535,38 @@ async def list_evidence_for_application(
         .all()
     )
 
-    return [
-        EvidenceDetailResponse(
-            evidence_id=e.evidence_id,
-            application_id=e.application_id,
-            evidence_type=e.evidence_type,
-            mime_type=e.mime_type,
-            file_size_bytes=e.file_size_bytes,
-            sha256_hash_device=e.sha256_hash_device,
-            sha256_hash_server=e.sha256_hash_server,
-            captured_at_device=e.captured_at_device,
-            captured_at_server=e.captured_at_server,
-            time_drift_seconds=e.time_drift_seconds,
-            gps_latitude=e.gps_latitude,
-            gps_longitude=e.gps_longitude,
-            gps_accuracy_meters=e.gps_accuracy_meters,
-            exif_data=e.exif_data,
-            uploader_role=e.uploader_role,
-            storage_uri=None,
-            integrity_passed=e.integrity_passed,
-            integrity_issues=e.integrity_issues,
-            created_at=e.created_at,
-            updated_at=e.updated_at,
+    # Build response list with presigned URLs
+    response_list = []
+    for e in evidence_list:
+        # Generate presigned URL for each evidence item
+        storage_uri = storage_service.generate_presigned_url(
+            blob_path=e.storage_path,
+            expires_in_seconds=3600
         )
-        for e in evidence_list
-    ]
+
+        response_list.append(
+            EvidenceDetailResponse(
+                evidence_id=e.evidence_id,
+                application_id=e.application_id,
+                evidence_type=e.evidence_type,
+                mime_type=e.mime_type,
+                file_size_bytes=e.file_size_bytes,
+                sha256_hash_device=e.sha256_hash_device,
+                sha256_hash_server=e.sha256_hash_server,
+                captured_at_device=e.captured_at_device,
+                captured_at_server=e.captured_at_server,
+                time_drift_seconds=e.time_drift_seconds,
+                gps_latitude=e.gps_latitude,
+                gps_longitude=e.gps_longitude,
+                gps_accuracy_meters=e.gps_accuracy_meters,
+                exif_data=e.exif_data,
+                uploader_role=e.uploader_role,
+                storage_uri=storage_uri,
+                integrity_passed=e.integrity_passed,
+                integrity_issues=e.integrity_issues,
+                created_at=e.created_at,
+                updated_at=e.updated_at,
+            )
+        )
+
+    return response_list
