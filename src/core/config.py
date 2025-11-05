@@ -26,6 +26,8 @@ class Settings(BaseSettings):
     # Azure Storage
     AZURE_STORAGE_CONNECTION_STRING: str
     AZURE_STORAGE_CONTAINER_NAME: str = "evidence"
+    AZURE_STORAGE_EXPORT_CONTAINER_NAME: str = "exports"
+    STORAGE_PRESIGNED_URL_EXPIRY: int = 3600  # 1 hour in seconds
 
     # Application
     ENVIRONMENT: str = "development"
