@@ -1,0 +1,106 @@
+{
+  "rule_id": "ACCESS_001",
+  "version": "1.0",
+  "statute_id": "IS.RVK.ACCESS.2023.SEC.3.1.1",
+  "rule_type": "compliance",
+  "severity": "high",
+  "category": "accessibility",
+  "description": "Establishments with >20 seats must have accessible entrance and restroom",
+  "operator_tree": {
+    "op": "any_of",
+    "conditions": [
+      {
+        "op": "threshold_numeric_compare",
+        "params": {
+          "fact_name": "dining_area.seating_capacity",
+          "operator": "<=",
+          "threshold": 20
+        }
+      },
+      {
+        "op": "all_of",
+        "conditions": [
+          {
+            "op": "equals",
+            "params": {
+              "fact_name": "accessibility.entrance_ramp.exists",
+              "expected": true
+            }
+          },
+          {
+            "op": "equals",
+            "params": {
+              "fact_name": "accessibility.accessible_restroom.exists",
+              "expected": true
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "outcomes": {
+    "PASS": {
+      "message_key": "accessibility.compliant",
+      "remediation_key": null
+    },
+    "FAIL": {
+      "message_key": "accessibility.non_compliant",
+      "remediation_key": "accessibility.install_features"
+    },
+    "CONDITIONAL": {
+      "message_key": "accessibility.review_required",
+      "remediation_key": "accessibility.inspector_verification"
+    },
+    "INSUFFICIENT_EVIDENCE": {
+      "message_key": "accessibility.evidence_missing",
+      "remediation_key": "accessibility.submit_evidence"
+    }
+  },
+  "fixtures": [
+    {
+      "name": "compliant_small_capacity",
+      "facts": {
+        "dining_area.seating_capacity": 15,
+        "accessibility.entrance_ramp.exists": false,
+        "accessibility.accessible_restroom.exists": false
+      },
+      "expected_outcome": "PASS"
+    },
+    {
+      "name": "compliant_large_capacity_with_features",
+      "facts": {
+        "dining_area.seating_capacity": 60,
+        "accessibility.entrance_ramp.exists": true,
+        "accessibility.accessible_restroom.exists": true
+      },
+      "expected_outcome": "PASS"
+    },
+    {
+      "name": "non_compliant_large_no_ramp",
+      "facts": {
+        "dining_area.seating_capacity": 60,
+        "accessibility.entrance_ramp.exists": false,
+        "accessibility.accessible_restroom.exists": true
+      },
+      "expected_outcome": "FAIL"
+    },
+    {
+      "name": "non_compliant_large_no_restroom",
+      "facts": {
+        "dining_area.seating_capacity": 60,
+        "accessibility.entrance_ramp.exists": true,
+        "accessibility.accessible_restroom.exists": false
+      },
+      "expected_outcome": "FAIL"
+    },
+    {
+      "name": "non_compliant_large_no_features",
+      "facts": {
+        "dining_area.seating_capacity": 60,
+        "accessibility.entrance_ramp.exists": false,
+        "accessibility.accessible_restroom.exists": false
+      },
+      "expected_outcome": "FAIL"
+    }
+  ]
+}
