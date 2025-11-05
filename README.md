@@ -1,4 +1,4 @@
-# Permía Backend
+# Permia Backend
 
 **Deterministic enforcement infrastructure for regulated industries.**
 
