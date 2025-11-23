@@ -6,45 +6,31 @@ import uuid
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from src.db.database import get_db
-from src.db.models import Application, ApplicationFact
-from src.schemas.facts import FactSubmission, FactBatchSubmission, FactResponse, FactList
-from src.middleware.auth import get_current_user, get_tenant_id
+from ..core.database import get_db
+from ..db.models import Application, ApplicationFact
+from ..schemas.facts import FactSubmission, FactBatchSubmission, FactResponse, FactList
+from ..core.auth import get_current_user, AuthContext
 
 router = APIRouter(prefix="/api/v1/applications/{application_id}/facts", tags=["facts"])
 
 
-@router.post("", response_model=FactResponse, status_code=status.HTTP_201_CREATED)
-async def submit_fact(
+def upsert_fact(
+    db: Session,
     application_id: str,
-    fact_data: FactSubmission,
-    current_user: dict = Depends(get_current_user),
-    tenant_id: str = Depends(get_tenant_id),
-    db: Session = Depends(get_db)
-):
+    fact_data: FactSubmission
+) -> ApplicationFact:
     """
-    Submit a single fact for an application.
-    
-    Fact value is stored as JSONB with type information.
+    Helper function to upsert a fact (create or update).
+
+    Returns the created or updated fact without committing.
+    Caller is responsible for db.commit().
     """
-    # Verify application exists and belongs to tenant
-    application = db.query(Application).filter_by(
-        application_id=application_id,
-        tenant_id=tenant_id
-    ).first()
-    
-    if not application:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Application not found: {application_id}"
-        )
-    
-    # Check if fact already exists (update if so)
+    # Check if fact already exists
     existing_fact = db.query(ApplicationFact).filter_by(
         application_id=application_id,
         fact_name=fact_data.fact_name
     ).first()
-    
+
     if existing_fact:
         # Update existing fact
         existing_fact.fact_value = {
@@ -55,11 +41,8 @@ async def submit_fact(
         existing_fact.supporting_evidence_id = fact_data.supporting_evidence_id
         existing_fact.extractor_id = fact_data.extractor_id
         existing_fact.extraction_confidence = fact_data.extraction_confidence
-        
-        db.commit()
-        db.refresh(existing_fact)
         return existing_fact
-    
+
     # Create new fact
     fact = ApplicationFact(
         fact_id=f"fact_{uuid.uuid4().hex[:12]}",
@@ -74,11 +57,39 @@ async def submit_fact(
         extractor_id=fact_data.extractor_id,
         extraction_confidence=fact_data.extraction_confidence
     )
-    
     db.add(fact)
+    return fact
+
+
+@router.post("", response_model=FactResponse, status_code=status.HTTP_201_CREATED)
+async def submit_fact(
+    application_id: str,
+    fact_data: FactSubmission,
+    db: Session = Depends(get_db),
+    auth: AuthContext = Depends(get_current_user)
+):
+    """
+    Submit a single fact for an application.
+
+    Fact value is stored as JSONB with type information.
+    """
+    # Verify application exists and belongs to tenant
+    application = db.query(Application).filter_by(
+        application_id=application_id,
+        tenant_id=auth.tenant_id
+    ).first()
+    
+    if not application:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Application not found: {application_id}"
+        )
+
+    # Upsert the fact
+    fact = upsert_fact(db, application_id, fact_data)
     db.commit()
     db.refresh(fact)
-    
+
     return fact
 
 
@@ -86,19 +97,18 @@ async def submit_fact(
 async def submit_facts_batch(
     application_id: str,
     batch_data: FactBatchSubmission,
-    current_user: dict = Depends(get_current_user),
-    tenant_id: str = Depends(get_tenant_id),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    auth: AuthContext = Depends(get_current_user)
 ):
     """
     Submit multiple facts in a single request.
-    
+
     More efficient than submitting facts one at a time.
     """
     # Verify application exists
     application = db.query(Application).filter_by(
         application_id=application_id,
-        tenant_id=tenant_id
+        tenant_id=auth.tenant_id
     ).first()
     
     if not application:
@@ -108,42 +118,10 @@ async def submit_facts_batch(
         )
     
     created_facts = []
-    
+
     for fact_data in batch_data.facts:
-        # Check if fact exists (upsert)
-        existing_fact = db.query(ApplicationFact).filter_by(
-            application_id=application_id,
-            fact_name=fact_data.fact_name
-        ).first()
-        
-        if existing_fact:
-            # Update
-            existing_fact.fact_value = {
-                "value": fact_data.fact_value,
-                "type": fact_data.fact_type
-            }
-            existing_fact.fact_type = fact_data.fact_type
-            existing_fact.supporting_evidence_id = fact_data.supporting_evidence_id
-            existing_fact.extractor_id = fact_data.extractor_id
-            existing_fact.extraction_confidence = fact_data.extraction_confidence
-            created_facts.append(existing_fact)
-        else:
-            # Create
-            fact = ApplicationFact(
-                fact_id=f"fact_{uuid.uuid4().hex[:12]}",
-                application_id=application_id,
-                fact_name=fact_data.fact_name,
-                fact_value={
-                    "value": fact_data.fact_value,
-                    "type": fact_data.fact_type
-                },
-                fact_type=fact_data.fact_type,
-                supporting_evidence_id=fact_data.supporting_evidence_id,
-                extractor_id=fact_data.extractor_id,
-                extraction_confidence=fact_data.extraction_confidence
-            )
-            db.add(fact)
-            created_facts.append(fact)
+        fact = upsert_fact(db, application_id, fact_data)
+        created_facts.append(fact)
     
     db.commit()
     
@@ -160,9 +138,8 @@ async def submit_facts_batch(
 @router.get("", response_model=FactList)
 async def list_facts(
     application_id: str,
-    current_user: dict = Depends(get_current_user),
-    tenant_id: str = Depends(get_tenant_id),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    auth: AuthContext = Depends(get_current_user)
 ):
     """
     List all facts for an application.
@@ -170,7 +147,7 @@ async def list_facts(
     # Verify application exists
     application = db.query(Application).filter_by(
         application_id=application_id,
-        tenant_id=tenant_id
+        tenant_id=auth.tenant_id
     ).first()
     
     if not application:
@@ -193,9 +170,8 @@ async def list_facts(
 async def delete_fact(
     application_id: str,
     fact_id: str,
-    current_user: dict = Depends(get_current_user),
-    tenant_id: str = Depends(get_tenant_id),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    auth: AuthContext = Depends(get_current_user)
 ):
     """
     Delete a fact from an application.
@@ -203,7 +179,7 @@ async def delete_fact(
     # Verify application exists
     application = db.query(Application).filter_by(
         application_id=application_id,
-        tenant_id=tenant_id
+        tenant_id=auth.tenant_id
     ).first()
     
     if not application:

@@ -9,7 +9,7 @@ from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
 from sqlalchemy import text
 
-from .api import evidence, exports
+from .api import evidence, exports, applications, facts, snapshots, evaluation
 from .core.config import settings
 from .core.database import engine
 from .core.correlation import CorrelationIdMiddleware
@@ -143,6 +143,30 @@ if settings.ENABLE_EXPORT_API:
         prefix=f"/api/{settings.API_VERSION}/exports",
         tags=["Exports"],
     )
+
+# Application management endpoints
+app.include_router(
+    applications.router,
+    tags=["Applications"],
+)
+
+# Facts endpoints (nested under applications)
+app.include_router(
+    facts.router,
+    tags=["Facts"],
+)
+
+# Decision snapshots endpoints
+app.include_router(
+    snapshots.router,
+    tags=["Snapshots"],
+)
+
+# Evaluation endpoints (nested under applications)
+app.include_router(
+    evaluation.router,
+    tags=["Evaluation"],
+)
 
 
 @app.get("/health", tags=["System"])

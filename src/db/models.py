@@ -147,3 +147,110 @@ class Export(Base):
 
     def __repr__(self) -> str:
         return f"<Export(id={self.export_id}, app={self.application_id}, status={self.status})>"
+
+
+class Application(Base):
+    """Restaurant permit applications"""
+
+    __tablename__ = "applications"
+
+    # Primary identifiers
+    application_id = Column(String, primary_key=True)
+    tenant_id = Column(String, nullable=False, index=True)
+    applicant_id = Column(String, nullable=False, index=True)
+
+    # Application details
+    application_type = Column(String, nullable=False)
+    business_name = Column(String, nullable=False)
+    business_address = Column(String, nullable=False)
+
+    # Status tracking
+    status = Column(String, nullable=False, default="draft", index=True)  # draft, submitted, under_review, approved, rejected, conditional
+
+    # Timestamps
+    created_at = Column(DateTime, server_default=func.now(), nullable=False, index=True)
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now(), nullable=False)
+    submitted_at = Column(DateTime, nullable=True)
+    reviewed_at = Column(DateTime, nullable=True)
+    decided_at = Column(DateTime, nullable=True)
+
+    # Latest evaluation snapshot
+    latest_snapshot_id = Column(String, nullable=True)
+
+    __table_args__ = (
+        Index("ix_applications_tenant_status", "tenant_id", "status"),
+        Index("ix_applications_applicant", "applicant_id", "created_at"),
+    )
+
+    def __repr__(self) -> str:
+        return f"<Application(id={self.application_id}, business={self.business_name}, status={self.status})>"
+
+
+class ApplicationFact(Base):
+    """Facts submitted for applications (upsertable by fact_name)"""
+
+    __tablename__ = "application_facts"
+
+    # Primary identifiers
+    fact_id = Column(String, primary_key=True)
+    application_id = Column(String, nullable=False, index=True)
+
+    # Fact details
+    fact_name = Column(String, nullable=False)
+    fact_value = Column(JSON, nullable=False)  # {value: ..., type: ...}
+    fact_type = Column(String, nullable=False)  # string, number, boolean, date, etc.
+
+    # Evidence linkage
+    supporting_evidence_id = Column(String, nullable=True, index=True)
+
+    # Extraction metadata
+    extractor_id = Column(String, nullable=True)  # Which extractor produced this fact
+    extraction_confidence = Column(Float, nullable=True)  # 0.0 - 1.0
+
+    # Timestamps
+    created_at = Column(DateTime, server_default=func.now(), nullable=False)
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now(), nullable=False)
+
+    __table_args__ = (
+        Index("ix_facts_app_name", "application_id", "fact_name", unique=True),
+        Index("ix_facts_evidence", "supporting_evidence_id"),
+    )
+
+    def __repr__(self) -> str:
+        return f"<ApplicationFact(id={self.fact_id}, app={self.application_id}, name={self.fact_name})>"
+
+
+class DecisionSnapshot(Base):
+    """Immutable snapshots of decision state at evaluation time"""
+
+    __tablename__ = "decision_snapshots"
+
+    # Primary identifiers
+    snapshot_id = Column(String, primary_key=True)
+    application_id = Column(String, nullable=False, index=True)
+
+    # Snapshot metadata
+    snapshot_version = Column(Integer, nullable=False, default=1)
+    trigger_type = Column(String, nullable=False)  # on_demand, auto_evaluate, manual_override
+    trigger_metadata = Column(JSON, nullable=True)
+
+    # Facts snapshot (immutable copy at evaluation time)
+    facts_snapshot = Column(JSON, nullable=False)  # Complete facts state
+
+    # Evaluation results
+    rule_outcomes = Column(JSON, nullable=False)  # List of rule results
+    overall_recommendation = Column(String, nullable=False)  # approved, rejected, conditional, insufficient_data
+
+    # Cryptographic integrity
+    snapshot_hash = Column(String, nullable=False)  # SHA-256 of canonical JSON
+    signature = Column(String, nullable=True)  # Digital signature
+
+    # Timestamps
+    created_at = Column(DateTime, server_default=func.now(), nullable=False, index=True)
+
+    __table_args__ = (
+        Index("ix_snapshots_app_created", "application_id", "created_at"),
+    )
+
+    def __repr__(self) -> str:
+        return f"<DecisionSnapshot(id={self.snapshot_id}, app={self.application_id}, recommendation={self.overall_recommendation})>"

@@ -416,7 +416,8 @@ async def upload_evidence(
 
         try:
             storage_service.delete_file(storage_path)
-        except:
+        except Exception:
+            # Log but ignore cleanup failures - primary error is more important
             pass
 
         return problem_response(
@@ -452,7 +453,8 @@ async def upload_evidence(
             )
             db.add(cache_entry)
             db.commit()
-        except:
+        except Exception:
+            # Ignore idempotency cache failures - response is already successful
             pass
 
     return response

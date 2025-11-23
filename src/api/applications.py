@@ -3,14 +3,15 @@ Applications API - Create and manage restaurant permit applications
 """
 
 import uuid
+from datetime import datetime, timezone
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from src.db.database import get_db
-from src.db.models import Application
-from src.schemas.applications import ApplicationCreate, ApplicationResponse, ApplicationList
-from src.middleware.auth import get_current_user, get_tenant_id
+from ..core.database import get_db
+from ..db.models import Application
+from ..schemas.applications import ApplicationCreate, ApplicationResponse, ApplicationList
+from ..core.auth import get_current_user, AuthContext
 
 router = APIRouter(prefix="/api/v1/applications", tags=["applications"])
 
@@ -18,21 +19,20 @@ router = APIRouter(prefix="/api/v1/applications", tags=["applications"])
 @router.post("", response_model=ApplicationResponse, status_code=status.HTTP_201_CREATED)
 async def create_application(
     application_data: ApplicationCreate,
-    current_user: dict = Depends(get_current_user),
-    tenant_id: str = Depends(get_tenant_id),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    auth: AuthContext = Depends(get_current_user)
 ):
     """
     Create a new restaurant permit application.
-    
+
     Requires authentication. Application is automatically linked to the
     authenticated user's tenant.
     """
     # Create application
     application = Application(
         application_id=f"app_{uuid.uuid4().hex[:12]}",
-        tenant_id=tenant_id,
-        applicant_id=current_user["user_id"],
+        tenant_id=auth.tenant_id,
+        applicant_id=auth.user_id,
         application_type=application_data.application_type,
         business_name=application_data.business_name,
         business_address=application_data.business_address,
@@ -49,18 +49,17 @@ async def create_application(
 @router.get("/{application_id}", response_model=ApplicationResponse)
 async def get_application(
     application_id: str,
-    current_user: dict = Depends(get_current_user),
-    tenant_id: str = Depends(get_tenant_id),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    auth: AuthContext = Depends(get_current_user)
 ):
     """
     Get application by ID.
-    
+
     Only accessible by users in the same tenant.
     """
     application = db.query(Application).filter_by(
         application_id=application_id,
-        tenant_id=tenant_id
+        tenant_id=auth.tenant_id
     ).first()
     
     if not application:
@@ -77,17 +76,16 @@ async def list_applications(
     status_filter: str = None,
     limit: int = 50,
     offset: int = 0,
-    current_user: dict = Depends(get_current_user),
-    tenant_id: str = Depends(get_tenant_id),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    auth: AuthContext = Depends(get_current_user)
 ):
     """
     List applications for current tenant.
-    
+
     Optional filtering by status.
     Paginated with limit/offset.
     """
-    query = db.query(Application).filter_by(tenant_id=tenant_id)
+    query = db.query(Application).filter_by(tenant_id=auth.tenant_id)
     
     if status_filter:
         query = query.filter_by(status=status_filter)
@@ -105,13 +103,12 @@ async def list_applications(
 async def update_application_status(
     application_id: str,
     new_status: str,
-    current_user: dict = Depends(get_current_user),
-    tenant_id: str = Depends(get_tenant_id),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    auth: AuthContext = Depends(get_current_user)
 ):
     """
     Update application status.
-    
+
     Valid transitions:
     - draft → submitted
     - submitted → under_review
@@ -119,7 +116,7 @@ async def update_application_status(
     """
     application = db.query(Application).filter_by(
         application_id=application_id,
-        tenant_id=tenant_id
+        tenant_id=auth.tenant_id
     ).first()
     
     if not application:
@@ -130,16 +127,13 @@ async def update_application_status(
     
     # Update status
     application.status = new_status
-    
+
     if new_status == "submitted":
-        from datetime import datetime
-        application.submitted_at = datetime.utcnow()
+        application.submitted_at = datetime.now(timezone.utc)
     elif new_status == "under_review":
-        from datetime import datetime
-        application.reviewed_at = datetime.utcnow()
+        application.reviewed_at = datetime.now(timezone.utc)
     elif new_status in ["approved", "rejected", "conditional"]:
-        from datetime import datetime
-        application.decided_at = datetime.utcnow()
+        application.decided_at = datetime.now(timezone.utc)
     
     db.commit()
     db.refresh(application)

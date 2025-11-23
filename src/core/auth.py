@@ -1,7 +1,7 @@
 from fastapi import Depends, HTTPException, status, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import jwt, JWTError
-from typing import Optional
+from typing import Optional, Callable
 from .config import settings
 
 security = HTTPBearer(auto_error=False)
@@ -114,7 +114,7 @@ async def require_auth(
 
 async def require_role(
     *allowed_roles: str,
-) -> callable:
+) -> Callable:
     """Factory for role-based authorization"""
 
     async def _check_role(auth: AuthContext = Depends(require_auth)) -> AuthContext:
